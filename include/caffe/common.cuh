@@ -3,7 +3,7 @@
  
 #include <cuda.h>
  
-#if !defined(__CUDA_ARCH__) || __CUDA_ARCH__ >= 600 　　//注意标红需要添加，不然会报错（根据自己服务器CUDA配置需求添加）
+#if !defined(__CUDA_ARCH__) || __CUDA_ARCH__ >= 600 
  
 #else
 // CUDA: atomicAdd is not defined for doubles

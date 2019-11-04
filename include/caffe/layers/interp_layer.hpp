@@ -25,7 +25,7 @@ class InterpLayer : public Layer<Dtype> {
       const vector<Blob<Dtype>*>& top);
  
   virtual inline const char* type() const { return "Interp"; }
-  virtual inline int ExactNumBottomBlobs() const { return 1; }　　　　　//此处可以根据需求修改Interp层的输入个数，默认是1；下同
+  virtual inline int ExactNumBottomBlobs() const { return 1; }
   virtual inline int ExactNumTopBlobs() const { return 1; }
  
  protected:
