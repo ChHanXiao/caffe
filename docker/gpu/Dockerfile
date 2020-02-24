@@ -1,4 +1,4 @@
-FROM nvidia/cuda:8.0-cudnn6-devel-ubuntu16.04
+FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
 ENV LANG C.UTF-8
 RUN groupadd --gid 1000 uisee \
     && useradd --uid 1000 --gid uisee --shell /bin/bash --create-home uisee
@@ -9,6 +9,7 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/source
     cmake \
     git \
     wget \
+    curl \
     libatlas-base-dev \
     libboost-all-dev \
     libgflags-dev \
@@ -43,16 +44,18 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
     Cython \
     wheel && \
     wget https://github.com/opencv/opencv/archive/3.4.7.tar.gz && \
-    tar -zxf 3.4.7.tar.gz && cd 3.4.7 && \
+    tar -zxf 3.4.7.tar.gz && cd opencv-3.4.7 && \
     mkdir build && cd build && \
-    cmake .. && make -j"$(nproc)" && make install \
-    git clone -b 1.0 --depth 1 https://github.com/woodsgao/caffe.git . && \
-    pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple --upgrade pip && \
-    cd python && for req in $(cat requirements.txt) pydot; do pip3 -i https://pypi.tuna.tsinghua.edu.cn/simple install $req; done && cd .. && \
-    git clone https://github.com/NVIDIA/nccl.git && cd nccl && make -j install && cd .. && rm -rf nccl && \
-    mkdir build && cd build && \
-    cmake -DUSE_CUDNN=1 -DUSE_NCCL=1 .. && \
-    make -j"$(nproc)"
+    cmake .. && make -j"$(nproc)" && make install
+ENV LD_LIBRARY_PATH /usr/local/lib:&LD_LIBRARY_PATH
+RUN git clone https://github.com/woodsgao/caffe.git && \
+    cd caffe && \
+    pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple --upgrade pip python-dateutil && \
+    cd python && for req in $(cat requirements.txt) pydot; do pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple $req; done && cd .. && \
+    make -j"$(nproc)" all && \
+    make -j"$(nproc)" test && \
+    make -j"$(nproc)" runtest && \
+    make -j"$(nproc)" pycaffe&& \
 
 ENV PYCAFFE_ROOT $CAFFE_ROOT/python
 ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH
