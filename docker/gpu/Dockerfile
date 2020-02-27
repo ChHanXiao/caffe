@@ -1,4 +1,4 @@
-FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
+FROM nvidia/cuda:10.1-cudnn7-devel-ubuntu16.04
 ENV LANG C.UTF-8
 RUN groupadd --gid 1000 uisee \
     && useradd --uid 1000 --gid uisee --shell /bin/bash --create-home uisee
@@ -54,12 +54,11 @@ RUN git clone https://github.com/woodsgao/caffe.git && \
     cd python && for req in $(cat requirements.txt) pydot; do pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple $req; done && cd .. && \
     make -j"$(nproc)" all && \
     make -j"$(nproc)" test && \
-    make -j"$(nproc)" runtest && \
-    make -j"$(nproc)" pycaffe&& \
+    make -j"$(nproc)" pycaffe
 
-ENV PYCAFFE_ROOT $CAFFE_ROOT/python
+ENV PYCAFFE_ROOT $CAFFE_ROOT/caffe/python
 ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH
-ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
+ENV PATH $CAFFE_ROOT/caffe/build/tools:$PYCAFFE_ROOT:$PATH
 RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
 
 WORKDIR /workspace
