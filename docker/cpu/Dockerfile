@@ -59,7 +59,6 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
     make -j"$(nproc)" && make install && rm -r $CAFFE_ROOT/*
 ENV LD_LIBRARY_PATH /usr/local/lib:&LD_LIBRARY_PATH
 RUN git clone --depth 1 https://github.com/woodsgao/caffe.git . && \
-    cd caffe && \
     mv Makefile.config.cpu Makefile.config && \
     cd python && for req in $(cat requirements.txt) pydot; do pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple $req; done && cd .. && \
     make -j"$(nproc)" all && \
