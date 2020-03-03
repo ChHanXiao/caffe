@@ -56,7 +56,7 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
     -D PYTHON3_PACKAGES_PATH=/usr/lib/python3/dist-packages \
     -D CMAKE_CXX_FLAGS="-std=c++11" \
     -D CUDA_NVCC_FLAGS="--compiler-options "-std=c++03"" .. && \
-    make -j"$(nproc)" && make install && rm -r $CAFFE_ROOT/opencv-3.4.7
+    make -j"$(nproc)" && make install && rm -r $CAFFE_ROOT/*
 ENV LD_LIBRARY_PATH /usr/local/lib:&LD_LIBRARY_PATH
 RUN git clone --depth 1 https://github.com/woodsgao/caffe.git . && \
     cd caffe && \
