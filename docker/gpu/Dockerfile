@@ -10,6 +10,7 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/source
     git \
     wget \
     curl \
+    ca-certificates \
     libatlas-base-dev \
     libboost-all-dev \
     libgflags-dev \
@@ -46,7 +47,7 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
     wget https://github.com/opencv/opencv/archive/3.4.7.tar.gz && \
     tar -zxf 3.4.7.tar.gz && cd opencv-3.4.7 && \
     mkdir build && cd build && \
-    cmake .. && make -j"$(nproc)" && make install
+    cmake .. && make -j"$(nproc)" && make install && rm -r $CAFFE_ROOT/opencv-3.4.7
 ENV LD_LIBRARY_PATH /usr/local/lib:&LD_LIBRARY_PATH
 RUN git clone https://github.com/woodsgao/caffe.git && \
     cd caffe && \
