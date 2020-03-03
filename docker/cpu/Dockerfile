@@ -56,9 +56,9 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
     -D PYTHON3_PACKAGES_PATH=/usr/lib/python3/dist-packages \
     -D CMAKE_CXX_FLAGS="-std=c++11" \
     -D CUDA_NVCC_FLAGS="--compiler-options "-std=c++03"" .. && \
-    make -j"$(nproc)" && make install
+    make -j"$(nproc)" && make install && rm -r $CAFFE_ROOT/opencv-3.4.7
 ENV LD_LIBRARY_PATH /usr/local/lib:&LD_LIBRARY_PATH
-RUN git clone https://github.com/woodsgao/caffe.git && \
+RUN git clone --depth 1 https://github.com/woodsgao/caffe.git . && \
     cd caffe && \
     mv Makefile.config.cpu Makefile.config && \
     pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple --upgrade pip python-dateutil && \
@@ -67,9 +67,9 @@ RUN git clone https://github.com/woodsgao/caffe.git && \
     make -j"$(nproc)" test && \
     make -j"$(nproc)" pycaffe
 
-ENV PYCAFFE_ROOT $CAFFE_ROOT/caffe/python
+ENV PYCAFFE_ROOT $CAFFE_ROOT/python
 ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH
-ENV PATH $CAFFE_ROOT/caffe/build/tools:$PYCAFFE_ROOT:$PATH
+ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
 RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
 
 WORKDIR /workspace
