@@ -58,6 +58,11 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
     -D CUDA_NVCC_FLAGS="--compiler-options "-std=c++03"" .. && \
     make -j"$(nproc)" && make install && rm -r $CAFFE_ROOT/*
 ENV LD_LIBRARY_PATH /usr/local/lib:&LD_LIBRARY_PATH
+# RUN git config --global http.proxy http://10.8.2.183:10809 && \
+#     git config --global https.proxy http://10.8.2.183:10809 && \
+#     git clone --depth 1 https://github.com/woodsgao/caffe.git . && \
+#     git config --global --unset http.proxy && \
+#     git config --global --unset https.proxy && \
 RUN git clone --depth 1 https://github.com/woodsgao/caffe.git . && \
     mv Makefile.config.cpu Makefile.config && \
     cd python && for req in $(cat requirements.txt) pydot; do pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple $req; done && cd .. && \
