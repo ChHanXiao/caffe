@@ -1,4 +1,4 @@
-FROM nvidia/cuda:10.1-cudnn7-devel-ubuntu16.04
+FROM nvidia/cuda:8.0-cudnn6-devel-ubuntu16.04
 ENV LANG C.UTF-8
 RUN groupadd --gid 1000 uisee \
     && useradd --uid 1000 --gid uisee --shell /bin/bash --create-home uisee
@@ -64,7 +64,10 @@ ENV LD_LIBRARY_PATH /usr/local/lib:&LD_LIBRARY_PATH
 #     git config --global --unset http.proxy && \
 #     git config --global --unset https.proxy && \
 RUN git clone --depth 1 https://github.com/woodsgao/caffe.git . && \
-    cd python && for req in $(cat requirements.txt) pydot; do pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple $req; done && cd .. && \
+    cd python && \
+    for req in $(cat requirements.txt) pydot; do pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple $req; done && \
+    cd .. && \
+    cp Makefile.config.cu80 Makefile.config && \
     make -j"$(nproc)" all && \
     make -j"$(nproc)" test && \
     make -j"$(nproc)" pycaffe
