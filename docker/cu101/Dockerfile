@@ -1,7 +1,7 @@
-FROM nvidia/cuda:10.1-cudnn7-devel-ubuntu16.04
+FROM FROM nvidia/cuda:10.1-cudnn7-devel-ubuntu16.04
 ENV LANG C.UTF-8
-RUN groupadd --gid 1000 uisee \
-    && useradd --uid 1000 --gid uisee --shell /bin/bash --create-home uisee
+RUN groupadd --gid 1000 woods \
+    && useradd --uid 1000 --gid woods --shell /bin/bash --create-home woods
 
 RUN sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list && \
     apt-get update && apt-get install -y --no-install-recommends \
@@ -11,7 +11,7 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/source
     wget \
     curl \
     ca-certificates \
-    libatlas-base-dev \
+    libopenblas-dev \
     libboost-all-dev \
     libgflags-dev \
     libgoogle-glog-dev \
@@ -57,24 +57,24 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
     -D CMAKE_CXX_FLAGS="-std=c++11" \
     -D CUDA_NVCC_FLAGS="--compiler-options "-std=c++03"" .. && \
     make -j"$(nproc)" && make install && rm -r $CAFFE_ROOT/*
+
 ENV LD_LIBRARY_PATH /usr/local/lib:&LD_LIBRARY_PATH
-# RUN git config --global http.proxy http://10.8.2.183:10809 && \
-#     git config --global https.proxy http://10.8.2.183:10809 && \
-#     git clone --depth 1 https://github.com/woodsgao/caffe.git . && \
-#     git config --global --unset http.proxy && \
-#     git config --global --unset https.proxy && \
+
 RUN git clone --depth 1 https://github.com/woodsgao/caffe.git . && \
     cd python && \
     for req in $(cat requirements.txt) pydot; do pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple $req; done && \
     cd .. && \
+    mkdir -p include/caffe/proto && \
+    cd src/caffe/proto && \
+    protoc -I=./ --cpp_out=./ ./caffe.proto && \
+    cd ../../.. && cp src/caffe/proto/caffe.pb.h include/caffe/proto/ && \
     cp Makefile.config.cu101 Makefile.config && \
     make -j"$(nproc)" all && \
     make -j"$(nproc)" test && \
     make -j"$(nproc)" pycaffe
+    echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
 
 ENV PYCAFFE_ROOT $CAFFE_ROOT/python
 ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH
 ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
-RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
 
-WORKDIR /workspace
