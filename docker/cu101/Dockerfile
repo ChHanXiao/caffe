@@ -1,4 +1,4 @@
-FROM FROM nvidia/cuda:10.1-cudnn7-devel-ubuntu16.04
+FROM nvidia/cuda:10.1-cudnn7-devel-ubuntu16.04
 ENV LANG C.UTF-8
 RUN groupadd --gid 1000 woods \
     && useradd --uid 1000 --gid woods --shell /bin/bash --create-home woods
