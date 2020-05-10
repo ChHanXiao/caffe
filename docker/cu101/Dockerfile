@@ -71,7 +71,7 @@ RUN git clone --depth 1 https://github.com/woodsgao/caffe.git . && \
     cp Makefile.config.cu101 Makefile.config && \
     make -j"$(nproc)" all && \
     make -j"$(nproc)" test && \
-    make -j"$(nproc)" pycaffe
+    make -j"$(nproc)" pycaffe && \
     echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
 
 ENV PYCAFFE_ROOT $CAFFE_ROOT/python
